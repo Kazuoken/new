@@ -1,7 +1,10 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <HelloWorld />
+  <div>
+    <nav style="margin-bottom: 20px;">
+      <router-link to="/" style="margin-right: 10px;">Home</router-link>
+      <router-link to="/table">Static Table</router-link>
+    </nav>
+
+    <router-view />
+  </div>
 </template>
