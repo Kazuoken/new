@@ -1,4 +1,4 @@
-name: Frontend CD Pipeline (Develop to Main Merge)
+name: Backend CD Pipeline (Develop to Main Merge)
 
 on:
   push:
@@ -9,8 +9,7 @@ on:
       - main
     types: 
       - closed
-    
-
+      
 jobs:
   build_and_push_docker:
     runs-on: ubuntu-latest
@@ -33,7 +32,15 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/vue-frontend:${{ github.sha }}
-            ${{ secrets.DOCKER_USERNAME }}/vue-frontend:latest
+            ${{ secrets.DOCKER_USERNAME }}/aspnet-backend:${{ github.sha }}
+            ${{ secrets.DOCKER_USERNAME }}/aspnet-backend:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Trigger Production Deploy
+        run: curl -X GET ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+
+      - name: Report Production Deployment Status
+        run: echo "Backend production deployment triggered on Render and Docker image pushed to Docker Hub."
