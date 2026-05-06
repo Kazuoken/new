@@ -1,16 +1,17 @@
 # Build stage
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /src
+FROM node:20-alpine AS build
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
 
 COPY . .
-RUN dotnet restore
-RUN dotnet publish -c Release -o /app/publish
+RUN npm run build
 
 # Runtime stage
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
-WORKDIR /app
-COPY --from=build /app/publish .
+FROM nginx:alpine
+COPY --from=build /app/dist /usr/share/nginx/html
 
-EXPOSE 8080
+EXPOSE 80
 
-ENTRYPOINT ["sh", "-c", "dotnet ServerApi.dll --urls http://0.0.0.0:${PORT:-8080}"]
+CMD ["nginx", "-g", "daemon off;"]
