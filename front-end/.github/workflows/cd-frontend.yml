@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'front-end/**'
 
 jobs:
   build_and_push_docker:
@@ -24,7 +26,8 @@ jobs:
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ./front-end
+          file: ./front-end/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/vue-frontend:${{ github.sha }}
